@@ -443,7 +443,13 @@ with st.container():
                 updated_measurements = []
                 for measurement in st.session_state.measurements:
                     if measurement.get("date") == entry_date:
-                        updated_measurements.append(new_entry)
+                        merged = dict(measurement)
+                        for key, value in new_entry.items():
+                            if key == "date":
+                                merged[key] = value
+                            elif value is not None:
+                                merged[key] = value
+                        updated_measurements.append(merged)
                         replaced = True
                     else:
                         updated_measurements.append(measurement)
