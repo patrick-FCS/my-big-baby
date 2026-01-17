@@ -120,6 +120,9 @@ def chart_for_metric(
     base = reference_df[
         (reference_df["metric"] == metric) & (reference_df["gender"] == gender)
     ]
+    if base.empty:
+        st.info("Reference data for this chart is not available yet.")
+        return
     percentile_order = ["P3", "P15", "P50", "P85", "P97"]
     color_scale = alt.Scale(
         domain=percentile_order,
@@ -241,7 +244,7 @@ with st.container():
         gender = st.radio("Gender", ["Girls", "Boys"], horizontal=True)
         st.caption("Charts adapt to selected gender.")
         st.markdown("---")
-        st.markdown("**Note**: Curves are simplified WHO-style references for demo use.")
+        st.markdown("**Note**: Curves use WHO reference data from the CSVs in `data/csv`.")
 
     with col_entry:
         st.subheader("Add a measurement")
