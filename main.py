@@ -7,8 +7,27 @@ import pandas as pd
 import streamlit as st
 
 
+WEEKS_PER_MONTH = 4.348
+
+
 @st.cache_data(show_spinner=False)
 def build_who_reference() -> pd.DataFrame:
+        {
+            "metric": "weight",
+            "gender": "Boys",
+            "path": data_dir
+            / "boys_weight_0-13_weeks_pctl_tab_wfa_boys_p_0_13.csv",
+            "age_col": "Week",
+            "age_unit": "week",
+        },
+        {
+            "metric": "weight",
+            "gender": "Girls",
+            "path": data_dir
+            / "girls_weight_0-13_weeks_pctl_tab_wfa_girls_p_0_13.csv",
+            "age_col": "Week",
+            "age_unit": "week",
+        },
     percentiles = ["P3", "P15", "P50", "P85", "P97"]
     data_dir = Path("data/csv")
     datasets = [
@@ -17,18 +36,40 @@ def build_who_reference() -> pd.DataFrame:
             "gender": "Boys",
             "path": data_dir / "boys_weight_0-5_years_pctl_tab_wfa_boys_p_0_5.csv",
             "age_col": "Month",
+            "age_unit": "month",
+            "min_age_months": 3.0,
         },
         {
             "metric": "weight",
             "gender": "Girls",
             "path": data_dir / "girls_weight_0-5_years_pctl_tab_wfa_girls_p_0_5.csv",
             "age_col": "Month",
+            "age_unit": "month",
+            "min_age_months": 3.0,
+        },
+        {
+            "metric": "length_height",
+            "gender": "Boys",
+            "path": data_dir
+            / "boys_length_0-13_weeks_pctl_tab_lhfa_boys_p_0_13.csv",
+            "age_col": "Week",
+            "age_unit": "week",
+        },
+        {
+            "metric": "length_height",
+            "gender": "Girls",
+            "path": data_dir
+            / "girls_length_0-13_weeks_pctl_tab_lhfa_girls_p_0_13.csv",
+            "age_col": "Week",
+            "age_unit": "week",
         },
         {
             "metric": "length_height",
             "gender": "Boys",
             "path": data_dir / "boys_length_0-2_years_pctl_tab_lhfa_boys_p_0_2.csv",
             "age_col": "Month",
+            "age_unit": "month",
+            "min_age_months": 3.0,
             "max_age_months": 23.999,
         },
         {
@@ -36,6 +77,8 @@ def build_who_reference() -> pd.DataFrame:
             "gender": "Girls",
             "path": data_dir / "girls_length_0-2_years_pctl_tab_lhfa_girls_p_0_2.csv",
             "age_col": "Month",
+            "age_unit": "month",
+            "min_age_months": 3.0,
             "max_age_months": 23.999,
         },
         {
@@ -57,7 +100,10 @@ def build_who_reference() -> pd.DataFrame:
     frames = []
     for dataset in datasets:
         df = pd.read_csv(dataset["path"])
-        df = df.rename(columns={dataset["age_col"]: "age_months"})
+        if dataset["age_unit"] == "week":
+            df["age_months"] = df[dataset["age_col"]] / WEEKS_PER_MONTH
+        else:
+            df = df.rename(columns={dataset["age_col"]: "age_months"})
         if "min_age_months" in dataset:
             df = df[df["age_months"] >= dataset["min_age_months"]]
         if "max_age_months" in dataset:
