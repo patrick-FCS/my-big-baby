@@ -423,8 +423,16 @@ with st.container():
 
 measurements_df = pd.DataFrame(st.session_state.measurements)
 
-if not measurements_df.empty:
-    st.markdown("### Measurement log")
+st.markdown("### Measurement log")
+if measurements_df.empty:
+    empty_df = pd.DataFrame(
+        [
+            {"date": "", "age_months": "", "weight": "", "length_height": "", "head": ""}
+            for _ in range(3)
+        ]
+    )
+    st.dataframe(empty_df, use_container_width=True, hide_index=True)
+else:
     st.dataframe(measurements_df, use_container_width=True, hide_index=True)
 
 st.markdown("### WHO-style growth charts")
