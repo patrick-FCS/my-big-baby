@@ -12,6 +12,9 @@ WEEKS_PER_MONTH = 4.348
 
 @st.cache_data(show_spinner=False)
 def build_who_reference() -> pd.DataFrame:
+    percentiles = ["P3", "P15", "P50", "P85", "P97"]
+    data_dir = Path("data/csv")
+    datasets = [
         {
             "metric": "weight",
             "gender": "Boys",
@@ -28,9 +31,6 @@ def build_who_reference() -> pd.DataFrame:
             "age_col": "Week",
             "age_unit": "week",
         },
-    percentiles = ["P3", "P15", "P50", "P85", "P97"]
-    data_dir = Path("data/csv")
-    datasets = [
         {
             "metric": "weight",
             "gender": "Boys",
