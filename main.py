@@ -373,7 +373,7 @@ with st.container():
         st.subheader("Child profile")
         gender = st.radio("Gender", ["Girls", "Boys"], horizontal=True)
         if "date_of_birth" not in st.session_state:
-            st.session_state.date_of_birth = date.today()
+            st.session_state.date_of_birth = None
         date_of_birth = st.date_input(
             "Date of birth", value=st.session_state.date_of_birth
         )
@@ -388,38 +388,69 @@ with st.container():
             st.session_state.measurements = []
 
         with st.form("measurement-form", clear_on_submit=True):
-            entry_date = st.date_input("Measurement date", value=date.today())
-            weight = st.number_input("Weight (kg)", min_value=0.0, max_value=40.0, step=0.1)
-            age_days = (entry_date - st.session_state.date_of_birth).days
-            age_months = max(age_days / 30.4375, 0)
-            st.caption(f"Age at measurement: {age_months:.1f} months")
-            if age_months <= 24:
-                length_height = st.number_input(
-                    "Length (cm)", min_value=30.0, max_value=120.0, step=0.1
-                )
+            dob = st.session_state.date_of_birth
+            entry_date = st.date_input(
+                "Measurement date", value=None, min_value=dob
+            )
+            weight = st.number_input(
+                "Weight (kg)", min_value=0.0, max_value=40.0, step=0.1, value=None
+            )
+            age_months = None
+            if dob and entry_date:
+                age_days = (entry_date - dob).days
+                age_months = max(age_days / 30.4375, 0)
+                st.caption(f"Age at measurement: {age_months:.1f} months")
             else:
-                length_height = st.number_input(
-                    "Height (cm)", min_value=60.0, max_value=140.0, step=0.1
-                )
+                st.caption("Select date of birth and measurement date to compute age.")
+
+            length_label = "Length/Height (cm)"
+            length_min = 30.0
+            length_max = 140.0
+            if age_months is not None:
+                if age_months <= 24:
+                    length_label = "Length (cm)"
+                    length_min, length_max = 30.0, 120.0
+                else:
+                    length_label = "Height (cm)"
+                    length_min, length_max = 60.0, 140.0
+
+            length_height = st.number_input(
+                length_label, min_value=length_min, max_value=length_max, step=0.1, value=None
+            )
             head = st.number_input(
-                "Head circumference (cm)", min_value=25.0, max_value=60.0, step=0.1
+                "Head circumference (cm)", min_value=25.0, max_value=60.0, step=0.1, value=None
             )
             submitted = st.form_submit_button("Add measurement")
 
         if submitted:
-            if entry_date < st.session_state.date_of_birth:
+            if not dob:
+                st.error("Please add a date of birth first.")
+            elif not entry_date:
+                st.error("Please add a measurement date.")
+            elif entry_date < dob:
                 st.error("Measurement date cannot be before date of birth.")
+            elif age_months is not None and age_months > 60:
+                st.error("Only measurements up to 5 years are supported.")
             else:
-                st.session_state.measurements.append(
-                    {
-                        "date": entry_date,
-                        "age_months": round(age_months, 2),
-                        "weight": weight,
-                        "length_height": length_height,
-                        "head": head,
-                    }
-                )
-                st.success("Measurement added.")
+                new_entry = {
+                    "date": entry_date,
+                    "age_months": round(age_months, 2) if age_months is not None else None,
+                    "weight": weight,
+                    "length_height": length_height,
+                    "head": head,
+                }
+                replaced = False
+                updated_measurements = []
+                for measurement in st.session_state.measurements:
+                    if measurement.get("date") == entry_date:
+                        updated_measurements.append(new_entry)
+                        replaced = True
+                    else:
+                        updated_measurements.append(measurement)
+                if not replaced:
+                    updated_measurements.append(new_entry)
+                st.session_state.measurements = updated_measurements
+                st.success("Measurement saved.")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
