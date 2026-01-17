@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 import pandas as pd
 
@@ -45,8 +46,9 @@ def excel_to_csv(excel_path: str, prefix: str) -> None:
 
     for sheet in xls.sheet_names:
         df = pd.read_excel(xls, sheet_name=sheet)
-        safe_sheet = sheet.replace(" ", "_").lower()
-        csv_path = os.path.join(CSV_DIR, f"{prefix}_{safe_sheet}.csv")
+        safe_filename = re.sub(r"[^A-Za-z0-9_-]+", "_", prefix.strip())
+        safe_sheet = re.sub(r"[^A-Za-z0-9_-]+", "_", sheet.strip())
+        csv_path = os.path.join(CSV_DIR, f"{safe_filename}_{safe_sheet}.csv")
         df.to_csv(csv_path, index=False)
 
 
