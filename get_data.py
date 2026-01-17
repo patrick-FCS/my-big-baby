@@ -4,7 +4,18 @@ import pandas as pd
 
 URLS = {
     # Length / height for age
-    "boys_length_height": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/tab_lhfa_boys_p_0_13.xlsx"
+    "boys_length_0-13_weeks_pctl": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/tab_lhfa_boys_p_0_13.xlsx",
+    "boys_length_0-2_years_pctl":"https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/tab_lhfa_boys_p_0_2.xlsx",
+    "boys_height_2-5_years_pctl":"https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/tab_lhfa_boys_p_2_5.xlsx",
+    "girls_length_0-13_weeks_pctl": "https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/tab_lhfa_girls_p_0_13.xlsx",
+    "girls_length_0-2_years_pctl":"https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/tab_lhfa_girls_p_0_2.xlsx",
+    "girls_height_2-5_years_pctl":"https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/length-height-for-age/tab_lhfa_girls_p_2_5.xlsx",
+
+    # Weight for age
+    "boys_weight_0-13_weeks_pctl":"https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/tab_wfa_boys_p_0_13.xlsx",
+    "boys_weight_0-5_years_pctl":"https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/tab_wfa_boys_p_0_5.xlsx",
+    "girls_weight_0-13_weeks_pctl":"https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/tab_wfa_girls_p_0_13.xlsx",
+    "girls_weight_0-5_years_pctl":"https://cdn.who.int/media/docs/default-source/child-growth/child-growth-standards/indicators/weight-for-age/tab_wfa_girls_p_0_5.xlsx",
 }
 
 RAW_DIR = "data/raw_excel"
