@@ -10,73 +10,69 @@ def build_who_reference() -> pd.DataFrame:
     # Simplified WHO-style curves for demo purposes.
     ages = [0, 1, 2, 3, 4, 5, 6, 9, 12, 18, 24, 36, 48, 60]
     percentiles = ["P3", "P15", "P50", "P85", "P97"]
+    data_dir = Path("data/csv")
+    datasets = [
+        {
+            "metric": "weight",
+            "gender": "Boys",
+            "path": data_dir / "boys_weight_0-5_years_pctl_tab_wfa_boys_p_0_5.csv",
+            "age_col": "Month",
+        },
+        {
+            "metric": "weight",
+            "gender": "Girls",
+            "path": data_dir / "girls_weight_0-5_years_pctl_tab_wfa_girls_p_0_5.csv",
+            "age_col": "Month",
+        },
+        {
+            "metric": "length_height",
+            "gender": "Boys",
+            "path": data_dir / "boys_length_0-2_years_pctl_tab_lhfa_boys_p_0_2.csv",
+            "age_col": "Month",
+            "max_age_months": 23.999,
+        },
+        {
+            "metric": "length_height",
+            "gender": "Girls",
+            "path": data_dir / "girls_length_0-2_years_pctl_tab_lhfa_girls_p_0_2.csv",
+            "age_col": "Month",
+            "max_age_months": 23.999,
+        },
+        {
+            "metric": "length_height",
+            "gender": "Boys",
+            "path": data_dir / "boys_height_2-5_years_pctl_tab_lhfa_boys_p_2_5.csv",
+            "age_col": "Month",
+            "min_age_months": 24.0,
+        },
+        {
+            "metric": "length_height",
+            "gender": "Girls",
+            "path": data_dir / "girls_height_2-5_years_pctl_tab_lhfa_girls_p_2_5.csv",
+            "age_col": "Month",
+            "min_age_months": 24.0,
+        },
+    ]
 
-    def rows_for(metric, gender, values_by_percentile):
-        rows = []
-        for p in percentiles:
-            for age, value in zip(ages, values_by_percentile[p]):
-                rows.append(
-                    {
-                        "metric": metric,
-                        "gender": gender,
-                        "percentile": p,
-                        "age_months": age,
-                        "value": value,
-                    }
-                )
-        return rows
+    frames = []
+    for dataset in datasets:
+        df = pd.read_csv(dataset["path"])
+        df = df.rename(columns={dataset["age_col"]: "age_months"})
+        if "min_age_months" in dataset:
+            df = df[df["age_months"] >= dataset["min_age_months"]]
+        if "max_age_months" in dataset:
+            df = df[df["age_months"] <= dataset["max_age_months"]]
+        df = df[["age_months"] + percentiles]
+        melted = df.melt(
+            id_vars="age_months",
+            var_name="percentile",
+            value_name="value",
+        )
+        melted["metric"] = dataset["metric"]
+        melted["gender"] = dataset["gender"]
+        frames.append(melted)
 
-    weight_boys = {
-        "P3": [2.5, 3.1, 3.8, 4.4, 4.9, 5.4, 5.8, 6.8, 7.7, 8.9, 10.1, 12.1, 13.9, 15.7],
-        "P15": [2.9, 3.6, 4.3, 4.9, 5.4, 5.9, 6.4, 7.5, 8.5, 9.8, 11.1, 13.4, 15.2, 17.0],
-        "P50": [3.4, 4.2, 5.0, 5.7, 6.2, 6.7, 7.2, 8.4, 9.5, 10.9, 12.2, 14.3, 16.3, 18.2],
-        "P85": [4.1, 4.9, 5.8, 6.5, 7.0, 7.6, 8.1, 9.4, 10.7, 12.2, 13.6, 15.8, 18.0, 20.2],
-        "P97": [4.6, 5.5, 6.4, 7.1, 7.7, 8.3, 8.9, 10.3, 11.6, 13.2, 14.8, 17.1, 19.6, 22.2],
-    }
-    weight_girls = {
-        "P3": [2.4, 3.0, 3.6, 4.1, 4.6, 5.0, 5.4, 6.3, 7.1, 8.1, 9.2, 11.1, 12.8, 14.5],
-        "P15": [2.8, 3.4, 4.1, 4.6, 5.0, 5.5, 5.9, 6.9, 7.8, 8.9, 10.1, 12.1, 13.9, 15.7],
-        "P50": [3.2, 3.9, 4.6, 5.1, 5.6, 6.1, 6.5, 7.6, 8.6, 9.8, 11.0, 13.0, 14.9, 16.8],
-        "P85": [3.8, 4.6, 5.3, 5.9, 6.4, 6.9, 7.4, 8.6, 9.7, 11.1, 12.4, 14.6, 16.7, 18.9],
-        "P97": [4.3, 5.1, 5.9, 6.5, 7.0, 7.6, 8.1, 9.4, 10.6, 12.2, 13.6, 16.0, 18.5, 21.0],
-    }
-    length_boys = {
-        "P3": [46.5, 50.2, 53.2, 55.6, 57.6, 59.2, 60.7, 65.2, 69.3, 76.0, 81.5, 90.7, 98.5, 105.6],
-        "P15": [48.2, 51.9, 54.9, 57.3, 59.3, 61.0, 62.6, 67.3, 71.6, 78.5, 84.2, 93.8, 101.9, 109.2],
-        "P50": [49.9, 53.7, 56.7, 59.2, 61.3, 63.0, 64.7, 69.1, 73.4, 80.5, 86.4, 96.1, 104.2, 111.5],
-        "P85": [51.8, 55.6, 58.8, 61.4, 63.6, 65.4, 67.2, 71.9, 76.2, 83.5, 89.7, 100.0, 108.4, 115.8],
-        "P97": [53.1, 57.1, 60.3, 62.9, 65.1, 66.9, 68.8, 73.8, 78.1, 85.6, 92.1, 102.8, 111.3, 118.9],
-    }
-    length_girls = {
-        "P3": [45.6, 49.3, 52.2, 54.7, 56.7, 58.4, 60.0, 64.5, 68.9, 75.6, 81.3, 90.2, 98.0, 105.2],
-        "P15": [47.3, 51.0, 54.0, 56.5, 58.6, 60.3, 62.0, 66.8, 71.3, 78.4, 84.3, 93.6, 101.6, 109.0],
-        "P50": [49.1, 52.9, 55.8, 58.4, 60.6, 62.4, 64.0, 68.7, 73.2, 80.7, 86.9, 96.8, 105.0, 112.6],
-        "P85": [51.0, 54.9, 57.9, 60.6, 62.8, 64.7, 66.4, 71.6, 76.2, 84.1, 90.6, 101.0, 109.6, 117.5],
-        "P97": [52.4, 56.3, 59.5, 62.1, 64.4, 66.3, 68.1, 73.7, 78.4, 86.6, 93.4, 104.3, 113.1, 121.3],
-    }
-    head_boys = {
-        "P3": [32.1, 33.9, 35.1, 36.0, 36.8, 37.4, 38.0, 39.5, 40.9, 42.7, 44.0, 46.0, 47.5, 48.8],
-        "P15": [33.1, 34.8, 36.0, 36.9, 37.7, 38.3, 38.9, 40.4, 41.8, 43.6, 44.9, 46.8, 48.2, 49.5],
-        "P50": [34.5, 36.1, 37.3, 38.2, 39.0, 39.6, 40.2, 41.7, 43.0, 44.8, 46.1, 47.9, 49.3, 50.5],
-        "P85": [35.8, 37.5, 38.7, 39.6, 40.4, 41.0, 41.6, 43.1, 44.4, 46.2, 47.5, 49.2, 50.5, 51.7],
-        "P97": [36.7, 38.4, 39.6, 40.5, 41.3, 41.9, 42.5, 44.0, 45.3, 47.0, 48.3, 50.0, 51.2, 52.4],
-    }
-    head_girls = {
-        "P3": [31.5, 33.3, 34.5, 35.4, 36.2, 36.8, 37.4, 38.9, 40.3, 42.1, 43.4, 45.5, 47.0, 48.2],
-        "P15": [32.4, 34.1, 35.3, 36.2, 37.0, 37.6, 38.2, 39.7, 41.1, 42.9, 44.2, 46.2, 47.6, 48.8],
-        "P50": [33.7, 35.4, 36.6, 37.5, 38.3, 38.9, 39.5, 41.0, 42.4, 44.1, 45.4, 47.3, 48.7, 49.9],
-        "P85": [35.0, 36.7, 37.9, 38.8, 39.6, 40.2, 40.8, 42.3, 43.7, 45.4, 46.7, 48.6, 49.9, 51.1],
-        "P97": [35.9, 37.6, 38.8, 39.7, 40.5, 41.1, 41.7, 43.2, 44.6, 46.2, 47.5, 49.3, 50.6, 51.8],
-    }
-
-    rows = []
-    rows += rows_for("weight", "Boys", weight_boys)
-    rows += rows_for("weight", "Girls", weight_girls)
-    rows += rows_for("length_height", "Boys", length_boys)
-    rows += rows_for("length_height", "Girls", length_girls)
-    rows += rows_for("head", "Boys", head_boys)
-    rows += rows_for("head", "Girls", head_girls)
-    return pd.DataFrame(rows)
+    return pd.concat(frames, ignore_index=True)
 
 
 def linear_prediction(points, horizon_months=12):
