@@ -86,6 +86,7 @@ def build_who_reference() -> pd.DataFrame:
             "gender": "Boys",
             "path": data_dir / "boys_height_2-5_years_pctl_tab_lhfa_boys_p_2_5.csv",
             "age_col": "Month",
+            "age_unit": "month",
             "min_age_months": 24.0,
         },
         {
@@ -93,6 +94,7 @@ def build_who_reference() -> pd.DataFrame:
             "gender": "Girls",
             "path": data_dir / "girls_height_2-5_years_pctl_tab_lhfa_girls_p_2_5.csv",
             "age_col": "Month",
+            "age_unit": "month",
             "min_age_months": 24.0,
         },
     ]
@@ -100,7 +102,8 @@ def build_who_reference() -> pd.DataFrame:
     frames = []
     for dataset in datasets:
         df = pd.read_csv(dataset["path"])
-        if dataset["age_unit"] == "week":
+        age_unit = dataset.get("age_unit", "month")
+        if age_unit == "week":
             df["age_months"] = df[dataset["age_col"]] / WEEKS_PER_MONTH
         else:
             df = df.rename(columns={dataset["age_col"]: "age_months"})
