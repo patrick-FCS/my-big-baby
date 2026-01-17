@@ -7,8 +7,6 @@ import streamlit as st
 
 
 def build_who_reference() -> pd.DataFrame:
-    # Simplified WHO-style curves for demo purposes.
-    ages = [0, 1, 2, 3, 4, 5, 6, 9, 12, 18, 24, 36, 48, 60]
     percentiles = ["P3", "P15", "P50", "P85", "P97"]
     data_dir = Path("data/csv")
     datasets = [
