@@ -242,7 +242,7 @@ def chart_for_metric(
         .configure_axis(labelFont="Alegreya Sans", titleFont="Alegreya Sans")
         .configure_legend(title=None, labelFont="Alegreya Sans")
     )
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(chart, width="stretch")
 
 
 st.set_page_config(page_title="My big baby", page_icon="🍼", layout="wide")
@@ -471,9 +471,9 @@ if measurements_df.empty:
             for _ in range(3)
         ]
     )
-    st.dataframe(empty_df, use_container_width=True, hide_index=True)
+    st.dataframe(empty_df, width="stretch", hide_index=True)
 else:
-    st.dataframe(measurements_df, use_container_width=True, hide_index=True)
+    st.dataframe(measurements_df, width="stretch", hide_index=True)
 
 st.markdown("### WHO-style growth charts")
 reference_df = build_who_reference()
