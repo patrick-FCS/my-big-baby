@@ -6,6 +6,7 @@ import pandas as pd
 import streamlit as st
 
 
+@st.cache_data(show_spinner=False)
 def build_who_reference() -> pd.DataFrame:
     percentiles = ["P3", "P15", "P50", "P85", "P97"]
     data_dir = Path("data/csv")
