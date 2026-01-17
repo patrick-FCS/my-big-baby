@@ -369,6 +369,12 @@ with st.container():
     with col_profile:
         st.subheader("Child profile")
         gender = st.radio("Gender", ["Girls", "Boys"], horizontal=True)
+        if "date_of_birth" not in st.session_state:
+            st.session_state.date_of_birth = date.today()
+        date_of_birth = st.date_input(
+            "Date of birth", value=st.session_state.date_of_birth
+        )
+        st.session_state.date_of_birth = date_of_birth
         st.caption("Charts adapt to selected gender.")
         st.markdown("---")
         st.markdown("**Note**: Curves use WHO reference data from the CSVs in `data/csv`.")
@@ -380,8 +386,10 @@ with st.container():
 
         with st.form("measurement-form", clear_on_submit=True):
             entry_date = st.date_input("Measurement date", value=date.today())
-            age_months = st.number_input("Age (months)", min_value=0, max_value=60, value=6)
             weight = st.number_input("Weight (kg)", min_value=0.0, max_value=40.0, step=0.1)
+            age_days = (entry_date - st.session_state.date_of_birth).days
+            age_months = max(age_days / 30.4375, 0)
+            st.caption(f"Age at measurement: {age_months:.1f} months")
             if age_months <= 24:
                 length_height = st.number_input(
                     "Length (cm)", min_value=30.0, max_value=120.0, step=0.1
@@ -396,16 +404,19 @@ with st.container():
             submitted = st.form_submit_button("Add measurement")
 
         if submitted:
-            st.session_state.measurements.append(
-                {
-                    "date": entry_date,
-                    "age_months": age_months,
-                    "weight": weight,
-                    "length_height": length_height,
-                    "head": head,
-                }
-            )
-            st.success("Measurement added.")
+            if entry_date < st.session_state.date_of_birth:
+                st.error("Measurement date cannot be before date of birth.")
+            else:
+                st.session_state.measurements.append(
+                    {
+                        "date": entry_date,
+                        "age_months": round(age_months, 2),
+                        "weight": weight,
+                        "length_height": length_height,
+                        "head": head,
+                    }
+                )
+                st.success("Measurement added.")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
