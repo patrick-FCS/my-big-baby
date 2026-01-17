@@ -201,28 +201,109 @@ st.set_page_config(page_title="My big baby", page_icon="🍼", layout="wide")
 st.markdown(
     """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;600&family=Fraunces:opsz,wght@9..144,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --ink-900: #1f2328;
+  --ink-700: #353b44;
+  --ink-500: #59606b;
+  --peach-50: #fff4e5;
+  --peach-100: #fde3c7;
+  --citrus-300: #f9b35d;
+  --citrus-500: #f08a2b;
+  --sage-100: #eaf1ea;
+  --card: #fffdf8;
+  --card-border: #e8dfd2;
+  --shadow: 0 18px 36px rgba(42, 34, 18, 0.12);
+}
 
 .stApp {
-  background: radial-gradient(circle at 15% 20%, #fff7e8 0%, #f4efe6 45%, #e9f0f6 100%);
-  color: #2c2f36;
+  background:
+    radial-gradient(circle at 12% 18%, #fff6e8 0%, #f7ead6 42%, #e7eef6 100%),
+    linear-gradient(135deg, #fff7ec 0%, #f6efe3 50%, #eef2f6 100%);
+  color: var(--ink-900);
 }
 
-h1, h2, h3, .stMarkdown h1, .stMarkdown h2 {
+h1, h2, h3, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
   font-family: "Fraunces", serif;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
+  color: var(--ink-900);
 }
 
-body, p, label, div {
-  font-family: "Alegreya Sans", sans-serif;
+h1, .stMarkdown h1 {
+  font-size: 3.1rem;
+  margin-bottom: 0.2rem;
+}
+
+h2, .stMarkdown h2 {
+  font-size: 1.9rem;
+}
+
+h3, .stMarkdown h3 {
+  font-size: 1.45rem;
+}
+
+body, p, label, div, .stMarkdown, .stTextInput, .stNumberInput, .stDateInput {
+  font-family: "IBM Plex Sans", sans-serif;
+  color: var(--ink-700);
 }
 
 .section-card {
-  padding: 1.2rem 1.6rem;
-  background: #ffffffcc;
-  border: 1px solid #e3dfd7;
-  border-radius: 18px;
-  box-shadow: 0 12px 28px rgba(36, 35, 30, 0.08);
+  padding: 1.4rem 1.8rem;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+
+.stMarkdown p {
+  font-size: 1.02rem;
+}
+
+.stCaption {
+  color: var(--ink-500);
+}
+
+.stRadio label {
+  color: var(--ink-700);
+  font-weight: 500;
+}
+
+div[data-baseweb="input"] input,
+div[data-baseweb="input"] input:focus,
+div[data-baseweb="input"] input:hover,
+div[data-baseweb="select"] input {
+  background: #ffffff;
+  color: var(--ink-900);
+  border: 1px solid #d6cbbb;
+  box-shadow: inset 0 1px 2px rgba(24, 20, 12, 0.08);
+}
+
+div[data-baseweb="input"] input:focus,
+div[data-baseweb="select"] input:focus {
+  border-color: var(--citrus-500);
+  box-shadow: 0 0 0 3px rgba(240, 138, 43, 0.2);
+}
+
+.stButton > button {
+  background: linear-gradient(135deg, #f2a444, #f07b2d);
+  color: #1f2328;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  padding: 0.55rem 1.4rem;
+  box-shadow: 0 10px 20px rgba(240, 138, 43, 0.25);
+}
+
+.stButton > button:hover {
+  filter: brightness(1.03);
+  transform: translateY(-1px);
+}
+
+.stDataFrame {
+  border: 1px solid #e5d8c8;
+  border-radius: 16px;
+  overflow: hidden;
 }
 </style>
 """,
